@@ -13,7 +13,7 @@ arr = np.random.rand(3,3)
 arr_inv = np.linalg.inv(arr) 
 
 # sareizināt abas matricas un noapaļot līdz integer precizitātei
-reizinājums = np.rint(np.dot(arr,arr_inv)).astype(int)
+reizinājums = abs(np.rint(np.dot(arr,arr_inv)))
 
 # Izveidot trešo matricu, kas ir 3x3 identitātes matrica 
 identitates_matrica = np.eye(3,3)
