@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <limits>
 #include "string.h"
 
 #ifdef _WIN32
@@ -31,6 +32,11 @@ void clearConsole() {
     #endif
 }
 
+void pauseConsole() {
+    cout<<"Nospiediet enter, lai turpināt!";
+    while(cin.get()!='\n'){}
+}
+
 // returns chosen action
 int promptAction(string currTxt){
     cout<<"Tagadējais teksts: \n\t\""<<currTxt<<"\""<<endl;
@@ -40,7 +46,7 @@ int promptAction(string currTxt){
     cout<<"Izvēlieties darbību: ";
     int action;
     cin>>action;
-    cin.ignore(1,'\n'); // ignore endline character
+    while(cin.get()!='\n'){} // remove trailing newline
     return action;
 }
 
@@ -52,7 +58,7 @@ int main() {
 
     string txt = DEF_TXT;
     while(true) {
-        //clearConsole();
+        clearConsole();
         int action = promptAction(txt);
 
         switch (action) {
@@ -65,7 +71,7 @@ int main() {
                 cout<<"Teksta garums "<<txt.size()<<" ";
                 if(txt.size()%2==0) cout<<"ir pāra"<<endl;
                 else cout<<"ir nepāra"<<endl;
-                system("pause");
+                pauseConsole();
                 break;
             }
             case 3: {
@@ -73,7 +79,7 @@ int main() {
                 for(int i=1;i<=txt.size();i++)
                     res += i;
                 cout<<"Summa: "<<res<<endl;
-                system("pause");
+                pauseConsole();
                 break;
             }
             case 4: {
@@ -81,15 +87,14 @@ int main() {
                 for(int i=1;i<=txt.size();i++)
                     res *= i;
                 cout<<"Faktoriālis: "<<res<<endl;
-                system("pause");
+                pauseConsole();
                 break;
             }
             case 5: {
-                std::string res = txt.toSTDString();
-                for(int i=0;i<res.size()/2;i++)
-                    std::swap(res[i], res[res.size()-i-1]);
-                cout<<res<<endl;
-                system("pause");
+                for(int i=txt.size()-1;i>=0;i--)
+                    cout<<txt[i];
+                cout<<endl;
+                pauseConsole();
                 break;
             }
             case 6: {

@@ -1,1 +1,1 @@
-g++ string.cpp main.cpp && ./a.out && rm -f ./a.out
+g++ string.cpp main.cpp -o ./bin/exe && ./bin/exe
