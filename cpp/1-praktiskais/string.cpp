@@ -1,12 +1,21 @@
+// Author: Krišjānis Petručeņa
 #include <vector>
 #include <cstring>
 #include <string>
 #include <istream>
-#include "string.h"
+#include "string.hpp"
+#include <iostream>
+#ifdef _WIN32
+#include "windows.h"
+#endif
 
 kpetrucena::string::string(){}
 
 kpetrucena::string::string(const char str[]){
+    push_back(str);
+}
+
+void kpetrucena::string::push_back(const char str[]) {
     int left = 0;
     for(int i=0;str[i]!='\0';i++){
         if(left==0) {
@@ -52,10 +61,26 @@ char* kpetrucena::string::operator[](int i) {
 
 std::istream& operator>>(std::istream& is, kpetrucena::string& str)
 {
+    #ifdef _WIN32
+    str = kpetrucena::string();
+    while(true) {
+        wchar_t wchar_answer[2];
+        memset(wchar_answer,0,sizeof(wchar_answer));
+        DWORD read_wchars = 0;
+        ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE),wchar_answer,1,&read_wchars, NULL);
+        char char_answer[5];
+        memset(char_answer,0,sizeof(char_answer));
+        WideCharToMultiByte(CP_UTF8,0,wchar_answer,1,char_answer,5,NULL,NULL);
+        if(char_answer[0]>=0&&char_answer[0]<33) break; // special symbols in ASCII table
+        str.push_back(char_answer);
+    }
+    return is;
+    #else
     std::string tmp;
     is>>tmp;
     str = kpetrucena::string(tmp.data());
     return is;
+    #endif
 }
 
 std::ostream& operator<<(std::ostream& os, const kpetrucena::string& str)
@@ -65,10 +90,24 @@ std::ostream& operator<<(std::ostream& os, const kpetrucena::string& str)
 }
 
 std::istream& getline(std::istream& is, kpetrucena::string& str) {
-    char ch;
+    #ifdef _WIN32
+    str = kpetrucena::string();
+    while(true) {
+        wchar_t wchar_answer[2];
+        memset(wchar_answer,0,sizeof(wchar_answer));
+        DWORD read_wchars = 0;
+        ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE),wchar_answer,1,&read_wchars, NULL);
+        char char_answer[5];
+        memset(char_answer,0,sizeof(char_answer));
+        WideCharToMultiByte(CP_UTF8,0,wchar_answer,1,char_answer,5,NULL,NULL);
+        if(char_answer[0]>=0&&char_answer[0]<32) break; // special symbols in ASCII table
+        str.push_back(char_answer);
+    }
+    return is;
+    #else
     std::string tmp;
-    while(is.get(ch)&&ch!='\n')
-        tmp.push_back(ch);
+    getline(is,tmp);
     str = kpetrucena::string(tmp.data());
     return is;
+    #endif
 }

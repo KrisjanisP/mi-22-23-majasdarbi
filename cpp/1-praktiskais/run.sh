@@ -1,1 +1,1 @@
-g++ string.cpp main.cpp -o ./bin/exe && ./bin/exe
+g++ string.cpp main.cpp bigint.cpp -o ./bin/exe && ./bin/exe

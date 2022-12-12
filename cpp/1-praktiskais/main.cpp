@@ -1,14 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <limits>
-#include "string.h"
+#include "string.hpp"
+#include "bigint.hpp"
 
 #ifdef _WIN32
 #include <io.h>
 #include "windows.h"
+#include <fcntl.h>
 #endif
 
-using namespace kpetrucena;
+using kpetrucena::string;
 using std::cin;
 using std::cout;
 using std::endl;
@@ -34,7 +36,9 @@ void clearConsole() {
 
 void pauseConsole() {
     cout<<"Nospiediet enter, lai turpināt!";
-    while(cin.get()!='\n'){}
+    // clear input buffer
+    char c;
+    do { c = cin.get(); if(c<0) break; } while (c!='\n');
 }
 
 // returns chosen action
@@ -46,7 +50,17 @@ int promptAction(string currTxt){
     cout<<"Izvēlieties darbību: ";
     int action;
     cin>>action;
-    while(cin.get()!='\n'){} // remove trailing newline
+    if(cin.fail()||action<1||action>6) {
+        cout<<"Kļūda! Darbība nav korekta!"<<endl;
+        cin.clear();
+        cin.ignore(256, '\n');
+        pauseConsole();
+        clearConsole();
+        return promptAction(currTxt);
+    }
+    // clear input buffer
+    char c;
+    do { c = cin.get(); if(c<0) break; } while (c!='\n');
     return action;
 }
 
@@ -55,18 +69,19 @@ int main() {
     SetConsoleCP(CP_UTF8);
     SetConsoleOutputCP(CP_UTF8);
     #endif
-
     string txt = DEF_TXT;
     while(true) {
         clearConsole();
         int action = promptAction(txt);
 
         switch (action) {
+            // IEVADĪT JAUNO TEKSTU
             case 1: {
                 cout<<"Ievadiet jauno tekstu: ";
                 getline(cin,txt);
                 break;
             }
+            // NOTEIKT TEKSTA GARUMA PARITĀTI
             case 2: {
                 cout<<"Teksta garums "<<txt.size()<<" ";
                 if(txt.size()%2==0) cout<<"ir pāra"<<endl;
@@ -74,6 +89,7 @@ int main() {
                 pauseConsole();
                 break;
             }
+            // IZVADĪT SUMMU NO 1 LĪDZ N
             case 3: {
                 int res = 0;
                 for(int i=1;i<=txt.size();i++)
@@ -82,14 +98,16 @@ int main() {
                 pauseConsole();
                 break;
             }
+            // ATRAST FAKTORIĀĻA N! VĒRTĪBU
             case 4: {
-                int res = 1;
+                BigInt res(1);
                 for(int i=1;i<=txt.size();i++)
                     res *= i;
-                cout<<"Faktoriālis: "<<res<<endl;
+                cout<<"Faktoriālis: "<<res.toString()<<endl;
                 pauseConsole();
                 break;
             }
+            // IZVADĪT VIRKNI NO OTRA GALA
             case 5: {
                 for(int i=txt.size()-1;i>=0;i--)
                     cout<<txt[i];
@@ -97,6 +115,7 @@ int main() {
                 pauseConsole();
                 break;
             }
+            // BEIGT DARBĪBU
             case 6: {
                 return 0;
                 break;

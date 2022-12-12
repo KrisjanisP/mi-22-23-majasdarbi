@@ -1,3 +1,4 @@
+// Author: Krišjānis Petručeņa
 #include <vector>
 #include <cstring>
 #include <string>
@@ -16,6 +17,7 @@ namespace kpetrucena {
         std::string toSTDString() const;
         int size() const;
         char* operator[](int i);
+        void push_back(const char c[]);
     };
 }
 
