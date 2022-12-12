@@ -15,13 +15,16 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-const string ACTIONS[6] = {
+const string ACTIONS[9] = {
 "1. Ievadīt jaunu tekstu",
 "2. Noteikt teksta garuma paritāti",
 "3. Izvadīt summu no 1 līdz n",
 "4. Atrast faktoriāļa n! vērtību",
 "5. Izvadīt virkni no otra gala",
-"6. Beigt darbību"
+"6. Izdzēst simbolus, kas nav 'a' vai 'b'",
+"7. Aizstāt katra vārda pirmo burtu ar '?'",
+"8. Izdzēst no virknes simbolus, kuru ASCII kods ir nepāra.",
+"9. Beigt darbību"
 };
 
 const string DEF_TXT = "Programmas ir jaraksta cilvekiem, kas tas lasis!";
@@ -45,12 +48,12 @@ void pauseConsole() {
 int promptAction(string currTxt){
     cout<<"Tagadējais teksts: \n\t\""<<currTxt<<"\""<<endl;
     cout<<"Darbības: "<<endl;
-    for(int i=0;i<6;i++)
+    for(int i=0;i<9;i++)
         cout<<"\t"<<ACTIONS[i]<<endl;
     cout<<"Izvēlieties darbību: ";
     int action;
     cin>>action;
-    if(cin.fail()||action<1||action>6) {
+    if(cin.fail()||action<1||action>9) {
         cout<<"Kļūda! Darbība nav korekta!"<<endl;
         cin.clear();
         cin.ignore(256, '\n');
@@ -115,8 +118,39 @@ int main() {
                 pauseConsole();
                 break;
             }
-            // BEIGT DARBĪBU
+            // IZDZEST SIMBOLUS, KAS NAV 'a' VAI 'b'
             case 6: {
+                string newTxt;
+                for(int i=0;i<txt.size();i++)
+                    if(strcmp(txt[i],"a")==0||strcmp(txt[i],"b")==0)
+                        newTxt.push_back(txt[i]);
+                txt = newTxt;
+                break;
+            }
+            // AIZSTĀT KATRA VĀRDA PIRMO BURTTU AR '?'
+            case 7: {
+                string newTxt;
+                for(int i=0;i<txt.size();i++) {
+                    if((i==0||strcmp(txt[i-1]," ")==0)&&strcmp(txt[i]," ")!=0){
+                        char a[5]={'?','\0'};
+                        newTxt.push_back(a);
+                    } else newTxt.push_back(txt[i]);
+                }
+                txt = newTxt;
+                break;
+            }
+            // IZDZĒST NEPĀRA ASCII KODA SIMBOLUS
+            case 8: {
+                string newTxt;
+                for(int i=0;i<txt.size();i++) {
+                    if(txt[i][0]<0||txt[i][0]%2==0)
+                        newTxt.push_back(txt[i]);
+                }
+                txt = newTxt;
+                break;
+            }
+            // BEIGT DARBĪBU
+            case 9: {
                 return 0;
                 break;
             }
