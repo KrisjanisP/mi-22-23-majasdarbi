@@ -2,7 +2,7 @@
 
 int main() {
     cout<<"2. UZDEVUMS\n";
-    int width, height;
+    float width, height;
     input("Input rectangle's width: ", width);
     input("Input rectangle's height: ", height);
     cout<<"Rectangle's area: "<<width*height;
