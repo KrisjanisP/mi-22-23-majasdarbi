@@ -37,4 +37,20 @@ int main() {
     else cout<<"Ievadītais skaitlis DALĀS ar 3\n";
 
     cout<<"4.3. UZDEVUMS\n";
+    input("Ievadiet skaitli: ", number);
+    string number_str;
+    for(int i=0;i<5;i++)
+        number_str += to_string(number);
+    string result;
+    int remainder = 0;
+    for(int i=0;i<number_str.size();i++) {
+        remainder *= 10;
+        remainder += number_str[i]-'0';
+        if(!i&&remainder<2) continue; // don't add the leading zero
+        result += to_string(remainder/2);
+        remainder %= 2;
+    }
+    cout<<result;
+    if(remainder) cout<<".5"<<endl;
+    else cout<<endl;
 }
