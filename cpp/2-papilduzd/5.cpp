@@ -3,7 +3,8 @@
 int main() {
     cout<<"5. UZDEVUMS\n";
     string virkne;
-    input("Ievadiet simbolu virkni: ", virkne);
+    cout<<"Ievadiet simbolu virkni: ";
+    getline(cin, virkne);
     string result;
     for(char c: virkne)
         if(toupper(c)>='A'&&toupper(c)<='Z')

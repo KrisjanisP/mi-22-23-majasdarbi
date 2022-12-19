@@ -26,8 +26,8 @@ int main() {
 
     cout<<"2.3. UZDEVUMS\n";
     int a_x, a_y;
-    input("Ievadiet punkta A x koordinati: ", x);
-    input("Ievadiet punkta A y koordinati: ", y);
+    input("Ievadiet punkta A x koordinati: ", a_x);
+    input("Ievadiet punkta A y koordinati: ", a_y);
     if(a_x>=x-width/2.0&&a_x<=x+width/2.0&&a_y>=y-height/2.0&&a_y<=y+height/2.0)
         cout<<"šis punkts ietilpst iekš dotā taisnstūra\n";
     else
