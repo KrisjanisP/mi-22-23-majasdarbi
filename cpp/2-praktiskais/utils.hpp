@@ -36,3 +36,18 @@ void input(const string &prompt, T &variable, Lambda correct)
     }
     cin.ignore(69420, '\n'); // clear buffer
 }
+
+void clear_console()
+{
+    #ifdef _WIN32
+    system("cls");      // clear console on windows
+    #else
+    system("clear");    // clear console on linux
+    #endif
+}
+
+void pause_console()
+{
+    cout << "Nospiediet enter, lai turpināt!" << endl;
+    cin.ignore(69420, '\n'); // clear input buffer
+}
