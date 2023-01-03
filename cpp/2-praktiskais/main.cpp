@@ -33,21 +33,6 @@ action prompt_action(const vector<int> &curr_numbers)
     return action(result);
 }
 
-void clear_console()
-{
-    #ifdef _WIN32
-    system("cls");      // clear console on windows
-    #else
-    system("clear");    // clear console on linux
-    #endif
-}
-
-void pause_console()
-{
-    cout << "Nospiediet enter, lai turpināt!" << endl;
-    cin.ignore(69420, '\n'); // clear input buffer
-}
-
 vector<int> prompt_numbers()
 {
     cout << "Ievadiet skaitļus: ";
