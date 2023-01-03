@@ -35,7 +35,11 @@ action prompt_action(const vector<int> &curr_numbers)
 
 void clear_console()
 {
-    system("clear");
+    #ifdef _WIN32
+    system("cls");      // clear console on windows
+    #else
+    system("clear");    // clear console on linux
+    #endif
 }
 
 void pause_console()
