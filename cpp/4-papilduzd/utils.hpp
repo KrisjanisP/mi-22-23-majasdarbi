@@ -15,7 +15,7 @@ void input(const string& prompt, T &variable) {
     cin.ignore(69420, '\n'); // clear buffer
 }
 
-void input_line(const string& prompt, string &variable) {
+void inputLine(const string& prompt, string &variable) {
     cout<<prompt;
     getline(cin, variable);
     if(cin.fail()) {

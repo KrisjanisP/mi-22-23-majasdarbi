@@ -128,7 +128,7 @@ int main()
     vector<int> curr_numbers = {4, 5, 6, 7, 8};
     while (true)
     {
-        clear_console();
+        clearConsole();
         action action = prompt_action(curr_numbers);
         switch (action)
         {
@@ -140,31 +140,31 @@ int main()
         case queue_action:
         {
             do_queue_action(curr_numbers);
-            pause_console();
+            pauseConsole();
             break;
         }
         case stack_action:
         {
             do_stack_action(curr_numbers);
-            pause_console();
+            pauseConsole();
             break;
         }
         case double_stack_action:
         {
             do_double_stack_action(curr_numbers);
-            pause_console();
+            pauseConsole();
             break;
         }
         case list_action:
         {
             do_list_action(curr_numbers);
-            pause_console();
+            pauseConsole();
             break;
         }
         case output_action:
         {
             do_output_action(curr_numbers);
-            pause_console();
+            pauseConsole();
             break;
         }
         case stop_action:

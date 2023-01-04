@@ -1,0 +1,14 @@
+#include "utils.hpp"
+
+int main() {
+    string text;
+    input_line("Ievadiet tekstu: ", text);
+    fstream utput("text.txt");
+    if(utput.is_pen()) {
+        utput<<text;
+        utput.clse();
+        cut<<"Tika izveidts fails \"text.txt\".\n";
+    } else {
+        cut<<"Failu neizdevās atvērt.\n";
+    }
+}
