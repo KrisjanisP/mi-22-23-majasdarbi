@@ -7,6 +7,7 @@ public:
     int day;
     int hour;
     int minute;
+    DateTime(){}
     DateTime(int year, int month, int day, int hour, int minute):
         year(year),month(month),day(day),hour(hour),minute(minute){}
     string toString() const;
@@ -81,14 +82,41 @@ eAction promptAction() {
     return result;
 }
 
+DateTime promptDateTime() {
+    DateTime dt;
+    input("Ievadiet datumu [dd.mm.yyyy hh:mm]: ", dt);
+    return dt;
+}
+
 int main() {
     cout<<"5. UZDEVUMS"<<endl;
+    DateTime current(2023,01,04,23,19);
     while(true) {
         clearConsole();
+        cout<<"datums: "<<current<<endl;
         eAction action = promptAction();
-
+        switch(action) {
+            case a_input: {
+                current = promptDateTime();
+                break;
+            }
+            case a_save: {
+                ofstream file("datetime.bin", ios::binary);
+                assert(file.is_open());
+                current.saveTo(file);
+                file.close();
+                break;
+            }
+            case a_read: {
+                ifstream file("datetime.bin", ios::binary);
+                assert(file.is_open());
+                current.readFrom(file);
+                file.close();
+                break;
+            }
+            case a_exit: {
+                return 0;
+            }
+        }
     }
-    // DateTime dateTime = readDateTime();
-    // cout<<dateTime<<endl;
-    // input("Ievadiet datumu [dd.mm.yyyy hh:mm]: ", dateTime);
 }
