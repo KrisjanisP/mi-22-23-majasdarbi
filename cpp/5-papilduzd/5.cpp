@@ -76,7 +76,7 @@ void saveDateTime(const DateTime &dt)
 eAction promptAction()
 {
     pair<eAction, string> actions[] = {
-        {a_input, "Ievadit datumu un laiku"},
+        {a_input, "Ievadīt datumu un laiku"},
         {a_save, "Saglabāt binārajā failā"},
         {a_read, "Nolasīt un izdrukāt uz ekrāna"},
         {a_exit, "Beigt programmu"}};
@@ -122,12 +122,18 @@ int main()
             assert(file.is_open());
             current.saveTo(file);
             file.close();
+            cout<<"Datums tika veiksmīgi saglabāts binārajā failā.\n";
+            pauseConsole();
             break;
         }
         case a_read:
         {
             ifstream file("datetime.bin", ios::binary);
-            assert(file.is_open());
+            if(!file.is_open()) {
+                cout << "Lai nolasīt no faila, fails ir jāizveido!\n";
+                pauseConsole();
+                break;
+            }
             current.readFrom(file);
             file.close();
             break;
