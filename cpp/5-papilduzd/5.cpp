@@ -130,7 +130,8 @@ int main()
         {
             ifstream file("datetime.bin", ios::binary);
             if(!file.is_open()) {
-                cout << "Lai nolasīt no faila, fails ir jāizveido!\n";
+                cout << "Lai nolasīt no faila, fails ir jāizveido.\n";
+                cout << "Izmantojiet 2. darbību, lai saglabāt datumu failā!\n";
                 pauseConsole();
                 break;
             }
