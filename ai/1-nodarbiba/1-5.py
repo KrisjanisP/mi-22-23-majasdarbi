@@ -46,7 +46,7 @@ class StaticObject:
         plt.plot(x_data, y_data)
 
 
-class Planet:
+class Planet(StaticObject):
     def __init__(self):
         super().__init__()
 
