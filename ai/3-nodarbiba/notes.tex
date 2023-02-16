@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage[a4paper, total={6in,10in}]{geometry}
+
+\begin{document}
+\huge
+
+$$
+P = \begin{bmatrix} 0 \\ 1\end{bmatrix} \text{- sākumpunkts}
+$$
+
+$$
+T = \begin{bmatrix} T_x \\ T_y\end{bmatrix} \text {- mērķis}
+$$
+
+$$ 
+R(\Theta) = \begin{bmatrix} cos \Theta & -sin \Theta \\ sin \Theta & cos \Theta \end{bmatrix}
+$$
+
+$$
+R'(\Theta) = \begin{bmatrix}-sin \Theta & -cos \Theta\\cos \Theta & -sin \Theta\end{bmatrix}
+$$
+
+$$
+d(\Theta _ 1, \Theta _ 2) = R(\Theta_1)P+R(\Theta_1)(R(\Theta_2)P)-T
+$$
+
+$$
+\frac{ \partial d(\Theta_1, \Theta_2)}{\partial \Theta_1} = R'(\Theta_1)P +  R'(\Theta_1)(R(\Theta_2)P)
+$$
+
+$$
+f(\Theta _ 1, \Theta _ 2) = \frac{d(\Theta _ 1, \Theta _ 2)^2}{2}
+$$
+\begin{multline*}
+\frac{\partial f(\Theta _ 1, \Theta _ 2)}{\partial \Theta_1} = \frac {\partial (\frac{1}{2}d(\Theta _ 1, \Theta _ 2)^2)}{\partial \Theta_1} =\\ \\
+\frac {\partial (\frac{1}{2}d(\Theta _ 1, \Theta _ 2)^2)}{\partial d(\Theta _ 1, \Theta _ 2)} \cdot \frac{ \partial d(\Theta_1, \Theta_2)}{\partial \Theta_1}
+= \\ \\ d(\Theta _ 1, \Theta _ 2) \cdot (R'(\Theta_1)P +  R'(\Theta_1)(R(\Theta_2)P))
+\end{multline*
+}
+\end{document}
