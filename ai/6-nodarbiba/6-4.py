@@ -21,8 +21,6 @@ BATCH_SIZE = 64
 TRAIN_TEST_SPLIT = 0.7
 EMBEDDING_SIZE = 8
 
-device = torch.device("cpu")
-
 
 class Dataset(torch.utils.data.Dataset):
     def __init__(self):
@@ -45,7 +43,7 @@ class Dataset(torch.utils.data.Dataset):
 
         Y_counter = Counter(Y)
         Y_counter_val = np.array(list(Y_counter.values()))
-        self.Y_weights = (0.77 / Y_counter_val) * np.sum(Y_counter_val)
+        self.Y_weights = (0.8 / Y_counter_val) * np.sum(Y_counter_val)
         self.X_classes = np.array(X[:, :3])
 
         # VERY IMPORTANT OTHERWISE NOT ENOUGH CAPACITY
@@ -102,19 +100,19 @@ dataloader_test = torch.utils.data.DataLoader(
 )
 
 
-class BatchNorm1d(torch.nn.Module):
+class BatchNormalize(torch.nn.Module):
     def __init__(
             self,
             num_features
     ):
         super().__init__()
 
+        self.train_mean_list = []
+        self.train_var_list = []
+
         self.num_features = num_features
         self.gamma = torch.nn.Parameter(torch.ones(1, self.num_features))
         self.beta = torch.nn.Parameter(torch.zeros(1, self.num_features))
-
-        self.train_mean_list = []
-        self.train_var_list = []
 
         self.train_mean = torch.zeros(self.num_features, )
         self.train_var = torch.ones(self.num_features, )
@@ -144,16 +142,16 @@ class BatchNorm1d(torch.nn.Module):
 
 
 class Model(torch.nn.Module):
-    def __init__(self, device):
+    def __init__(self):
         super().__init__()
 
         self.layers = torch.nn.Sequential(
             torch.nn.Linear(in_features=4 + EMBEDDING_SIZE *
                             3, out_features=256),
-            BatchNorm1d(num_features=256),
+            BatchNormalize(num_features=256),
             torch.nn.ReLU(),
             torch.nn.Linear(in_features=256, out_features=64),
-            BatchNorm1d(num_features=64),
+            BatchNormalize(num_features=64),
             torch.nn.ReLU(),
             torch.nn.Linear(in_features=64, out_features=1),
             torch.nn.Sigmoid()
@@ -165,10 +163,6 @@ class Model(torch.nn.Module):
                 torch.nn.Embedding(embedding_dim=EMBEDDING_SIZE,
                                    num_embeddings=len(dataset_full.labels[i]))
             )
-
-        if device:
-            self.layers = self.layers.to(device)
-            self.embs = self.embs.to(device)
 
     def forward(self, x, x_classes):
         x_enc = []
@@ -193,7 +187,7 @@ class LossBCE(torch.nn.Module):
         return loss
 
 
-model = Model(device=device)
+model = Model()
 optimizer = torch.optim.RMSprop(model.parameters(), lr=LEARNING_RATE)
 loss_fn = LossBCE()
 
@@ -226,10 +220,6 @@ for epoch in range(1, 1000):
         conf_matrix = np.zeros((dataset_full.Y_len, dataset_full.Y_len))
 
         for x, x_classes, y_idx in dataloader:
-            x = x.to(device)
-            x_classes = x_classes.to(device)
-            y_idx = y_idx.to(device)
-
             y_prim_idx = model.forward(x, x_classes)
 
             loss = loss_fn.forward(y_prim_idx, y_idx)
