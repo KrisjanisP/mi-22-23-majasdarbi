@@ -31,10 +31,9 @@ if torch.cuda.is_available():
 class Dataset(torch.utils.data.Dataset):
     def __init__(self):
         super().__init__()
-        path_dataset = '../data/Fruits28.pkl'
+        path_dataset = './data/Fruits28.pkl'
         if not os.path.exists(path_dataset):
-            pass
-            os.makedirs('../data', exist_ok=True)
+            os.makedirs('./data', exist_ok=True)
             download_url_to_file(
                 'http://share.yellowrobot.xyz/1645110979-deep-learning-intro-2022-q1/Fruits28.pkl',
                 path_dataset,
