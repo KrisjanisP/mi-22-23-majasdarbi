@@ -127,6 +127,18 @@ class Conv2d(torch.nn.Module):
             x_padded= torch.zeros(batch_size, self.in_channels, x_padded_size, x_padded_size)
             x_padded[:,:,self.padding:-self.padding,self.padding:-self.padding] = x
         K = self.K.view(-1,self.out_channels)
+        i_out = 0
+        for i in range(0, x_padded_size-self.kernel_size-1, self.stride):
+            j_out = 0
+            for j in range(0, x_padded_size-self.kernel_size-1,self.stride):
+                x_part = x_padded[:,:,i:i+self.kernel_size, j:j+self.kernel_size]
+                x_part = x_part.reshape(batch_size,K.size(0))
+
+                out_part = (K.t() @ x_part.unsqueeze(dim=2)).squeeze(dim=2)
+                out[:,:,i_out, j_out] = out_part
+
+                j_out += 1
+            i_out += 1
         return out
 
 class BatchNorm2d(torch.nn.Module):
@@ -187,15 +199,26 @@ class Model(torch.nn.Module):
         super().__init__()
 
         self.encoder = torch.nn.Sequential(
-            # TODO
+            Conv2d(in_channels=3,out_channels=5,kernel_size=2,stride=2,padding=1),
+            torch.nn.ReLU(),
+            Conv2d(in_channels=5,out_channels=10,kernel_size=3,stride=2,padding=1),
+            torch.nn.ReLU(),
+            Conv2d(in_channels=10,out_channels=15,kernel_size=3,stride=2,padding=1),
         )
-        self.fc = torch.nn.Linear(  # TODO
-            in_features=1,
-            out_features=1
+        out_1 = get_out_size(dataset_full.input_size, kernel_size=3, stride=2, padding=1)
+        out_2 = get_out_size(out_1, kernel_size=3, stride=2, padding=1)
+        out_3 = get_out_size(out_2, kernel_size=3, stride=2, padding=1)
+
+        self.fc = torch.nn.Linear(
+            in_features=15*out_3*out_3,
+            out_features=len(dataset_full.labels)
         )
 
     def forward(self, x):
-        y_prim = x  # TODO
+        out = self.encoder.forward(x)
+        out_flat = out.view(x.size(0), -1)
+        logits = self.fc.forward(out_flat)
+        y_prim = torch.softmax(logits, dim=1)
         return y_prim
 
 
@@ -234,8 +257,7 @@ for epoch in range(1, 100):
             y_idx = y.cpu().data.numpy().argmax(axis=-1)
             w = torch.FloatTensor(dataset_full.Y_weights[y_idx]).unsqueeze(dim=-1).to(DEVICE)
 
-            # TODO implement CCE
-            loss = 0
+            loss = torch.mean(-y*w*torch.log(y_prim+1e-8))
 
             if data_loader == dataloader_train:
                 loss.backward()
