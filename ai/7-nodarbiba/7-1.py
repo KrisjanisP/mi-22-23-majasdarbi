@@ -98,9 +98,7 @@ dataloader_test = torch.utils.data.DataLoader(
 
 
 def get_out_size(in_size, padding, kernel_size, stride):
-    # TODO implement formula
-    return 0
-
+    return int((in_size+2*padding-kernel_size)/stride)+1
 
 class Conv2d(torch.nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride, padding):
@@ -112,7 +110,8 @@ class Conv2d(torch.nn.Module):
         self.padding = padding
 
         self.K = torch.nn.Parameter(
-            torch.FloatTensor(1, )  # TODO set correct
+            # learnable params never have batch size
+            torch.FloatTensor(kernel_size, kernel_size, in_channels, out_channels)
         )
         torch.nn.init.kaiming_uniform_(self.K)
 
@@ -120,9 +119,15 @@ class Conv2d(torch.nn.Module):
         batch_size = x.size(0)
         in_size = x.size(-1)
         out_size = get_out_size(in_size, self.padding, self.kernel_size, self.stride)
-        out = x  # TODO
+        out = torch.zeros(batch_size, self.out_channels, out_size, out_size).to(DEVICE)
+        x_padded_size = in_size+2*self.padding
+        if not self.padding:
+            x_padded = x
+        else:
+            x_padded= torch.zeros(batch_size, self.in_channels, x_padded_size, x_padded_size)
+            x_padded[:,:,self.padding:-self.padding,self.padding:-self.padding] = x
+        K = self.K.view(-1,self.out_channels)
         return out
-
 
 class BatchNorm2d(torch.nn.Module):
     def __init__(self, num_features):
