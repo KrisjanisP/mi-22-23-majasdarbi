@@ -158,7 +158,8 @@ class BatchNorm2d(torch.nn.Module):
     def forward(self, x):
 
         if self.training:
-            # TODO
+            mean = torch.mean(x, dim=(0, 2, 3), keepdim=True)
+            var = torch.mean((x - mean) ** 2, dim=(0, 2, 3), keepdim=True)
 
             self.train_mean_list.append(mean)
             self.train_var_list.append(var)
@@ -168,10 +169,11 @@ class BatchNorm2d(torch.nn.Module):
                 self.train_var = torch.mean(torch.stack(self.train_var_list), axis=0)
                 self.train_mean_list.clear()
                 self.train_var_list.clear()
-            # TODO
+            mean = self.train_mean
+            var = self.train_var
 
-        # TODO
-        out = x
+        out = (x - mean) / torch.sqrt(var + 1e-5)
+        out = out * self.gamma + self.beta
         return out
 
 
