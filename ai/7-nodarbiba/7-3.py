@@ -19,14 +19,9 @@ plt.style.use('dark_background')
 
 LEARNING_RATE = 1e-4
 BATCH_SIZE = 128
-MAX_LEN = 200
+MAX_LEN = 2000
 TRAIN_TEST_SPLIT = 0.7
 DEVICE = 'cpu'
-
-if torch.cuda.is_available():
-    DEVICE = 'cuda'
-    MAX_LEN = 0
-
 
 class Dataset(torch.utils.data.Dataset):
     def __init__(self):
@@ -111,7 +106,7 @@ class Conv2d(torch.nn.Module):
 
         self.K = torch.nn.Parameter(
             # learnable params never have batch size
-            torch.FloatTensor(kernel_size, kernel_size, in_channels, out_channels)
+            torch.FloatTensor(kernel_size, kernel_size, in_channels, out_channels).to(DEVICE)
         )
         torch.nn.init.kaiming_uniform_(self.K)
 
@@ -191,8 +186,24 @@ class MaxPool2d(torch.nn.Module):
         in_size = x.size(-1)  # last dim from (B, C, W, H)
         out_size = get_out_size(in_size, self.padding, self.kernel_size, self.stride)
 
-        out = x  # TODO
+        out = torch.zeros(batch_size, channels, out_size, out_size).to(DEVICE)
+        x_padded_size = in_size+2*self.padding
+        if not self.padding:
+            x_padded = x
+        else:
+            x_padded= torch.zeros(batch_size, channels, x_padded_size, x_padded_size)
+            x_padded[:,:,self.padding:-self.padding,self.padding:-self.padding] = x
+        i_out = 0
+        for i in range(0, x_padded_size-self.kernel_size-1, self.stride):
+            j_out = 0
+            for j in range(0, x_padded_size-self.kernel_size-1,self.stride):
+                x_part = x_padded[:,:,i:i+self.kernel_size, j:j+self.kernel_size]
+                x_part = x_part.reshape(batch_size,channels,-1) # the size -1 is inferred from other dimensions
+                x_part = torch.max(x_part, dim=-1).values
+                out[:,:,i_out, j_out] = x_part
 
+                j_out += 1
+            i_out += 1
         return out
 
 
