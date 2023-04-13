@@ -303,4 +303,4 @@ for epoch in range(1, 100):
         plt.imshow(x[i].permute(1, 2, 0))
 
     plt.tight_layout(pad=0.5)
-    # plt.show()
+plt.show()
