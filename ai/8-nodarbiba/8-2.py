@@ -25,9 +25,9 @@ MAX_LEN = 200
 TRAIN_TEST_SPLIT = 0.7
 DEVICE = 'cpu'
 
-# if torch.cuda.is_available():
-#     DEVICE = 'cuda'
-#     MAX_LEN = 0
+if torch.cuda.is_available():
+    DEVICE = 'cuda'
+    MAX_LEN = 0
 
 
 class Dataset(torch.utils.data.Dataset):
