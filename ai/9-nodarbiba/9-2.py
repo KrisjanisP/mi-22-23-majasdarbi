@@ -30,8 +30,6 @@ if True or not torch.cuda.is_available():
     DEVICE = 'cpu'
     BATCH_SIZE = 6
 
-
-
 class DatasetApples(torch.utils.data.Dataset):
     def __init__(self):
         super().__init__()
@@ -68,7 +66,7 @@ train_test_split = int(len(dataset_full) * TRAIN_TEST_SPLIT)
 dataset_train, dataset_test = torch.utils.data.random_split(
     dataset_full,
     [train_test_split, len(dataset_full) - train_test_split],
-    generator=torch.Generator().manual_seed(0)
+    generator=torch.Generator().manual_seed(1)
 )
 
 data_loader_train = torch.utils.data.DataLoader(
@@ -89,14 +87,69 @@ data_loader_test = torch.utils.data.DataLoader(
 class AutoEncoder(torch.nn.Module):
     def __init__(self):
         super().__init__()
-        # Input (B, 3, 100, 100)
+
         self.encoder = torch.nn.Sequential(
-            #TODO
+            torch.nn.Conv2d(in_channels=3, out_channels=4, kernel_size=7, stride=1, padding=1),
+            torch.nn.BatchNorm2d(num_features=4),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.Conv2d(in_channels=4, out_channels=8, kernel_size=7, stride=2, padding=1),
+            torch.nn.BatchNorm2d(num_features=8),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.Conv2d(in_channels=8, out_channels=16, kernel_size=5, stride=1, padding=1),
+            torch.nn.BatchNorm2d(num_features=16),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.Conv2d(in_channels=16, out_channels=16, kernel_size=5, stride=2, padding=1),
+            torch.nn.BatchNorm2d(num_features=16),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.Conv2d(in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=1),
+            torch.nn.BatchNorm2d(num_features=16),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.Conv2d(in_channels=16, out_channels=32, kernel_size=5, stride=2, padding=1),
+            torch.nn.BatchNorm2d(num_features=32),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, stride=1, padding=1),
+            torch.nn.BatchNorm2d(num_features=32),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.AdaptiveAvgPool2d(output_size=(1,1))
         )
 
         self.decoder = torch.nn.Sequential(
-            torch.nn.Upsample(size=100),
-            torch.nn.Conv2d(in_channels=32, out_channels=3, kernel_size=3, stride=1, padding=1)
+            torch.nn.Upsample(size=(9,9)),
+
+            torch.nn.ConvTranspose2d(in_channels=32, out_channels=32, kernel_size=3, stride=1, padding=1),
+            torch.nn.BatchNorm2d(num_features=32),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.ConvTranspose2d(in_channels=32, out_channels=16, kernel_size=5, stride=2, padding=1),
+            torch.nn.BatchNorm2d(num_features=16),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.ConvTranspose2d(in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=1),
+            torch.nn.BatchNorm2d(num_features=16),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.ConvTranspose2d(in_channels=16, out_channels=16, kernel_size=5, stride=2, padding=1),
+            torch.nn.BatchNorm2d(num_features=16),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.ConvTranspose2d(in_channels=16, out_channels=8, kernel_size=5, stride=1, padding=1),
+            torch.nn.BatchNorm2d(num_features=8),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.ConvTranspose2d(in_channels=8, out_channels=4, kernel_size=7, stride=2, padding=1),
+            torch.nn.BatchNorm2d(num_features=4),
+            torch.nn.LeakyReLU(),
+
+            torch.nn.ConvTranspose2d(in_channels=4, out_channels=3, kernel_size=8, stride=1, padding=0),
+            torch.nn.BatchNorm2d(num_features=3),
+            torch.nn.Sigmoid(),
         )
 
 
@@ -140,7 +193,7 @@ for epoch in range(1, 100):
             y_label = y_label.squeeze().to(DEVICE)
 
             y_prim, z = model.forward(x)
-            loss = 0 # TODO
+            loss = torch.mean(torch.abs(y_prim-y_target))
             metrics_epoch[f'{stage}_loss'].append(loss.cpu().item())
 
             if data_loader == data_loader_train:
@@ -206,4 +259,6 @@ for epoch in range(1, 100):
     plt.legend(handles=scatter.legend_elements()[0], labels=dataset_full.labels)
 
     plt.tight_layout(pad=0.5)
-    plt.show()
+    plt.savefig('interactive.png')
+    plt.clf()
+    plt.cla()
